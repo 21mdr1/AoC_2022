@@ -15,7 +15,7 @@ class Graph:
         unvisited_nodes = self.vertices.copy() #set
         tentative_distances = dict() #dict
         for node in self.vertices:
-            if node == start_node_node:
+            if node == start_node:
                 tentative_distances[node] = 0
             else:
                 tentative_distances[node] = float('inf')
@@ -30,7 +30,7 @@ class Graph:
 
     def smallest_distance_is_inf(self,unvisited_nodes,tentative_distances):
         for node in unvisited_nodes:
-            if not tentative_distances[node] == float(inf):
+            if not tentative_distances[node] == float('inf'):
                 return False
         return True
 
@@ -43,7 +43,7 @@ class Graph:
         shortest_paths = dict() #form: {(node1,node2):([node1,...,node2],length)}
         for start_node in self.non_zero_valves:
             # Steps 1 & 2: Setup
-            unvisited_nodes,tentative_distances = setup_for_dijkstras(start_node)
+            unvisited_nodes,tentative_distances = self.setup_for_dijkstras(start_node)
             current_node = start_node
             shortest_paths[(start_node,start_node)] = [start_node]
 
@@ -57,11 +57,11 @@ class Graph:
                 # Step 4: mark as visited
                 unvisited_nodes.remove(current_node)
                 # Step 5: are we done?
-                if smallest_distance_is_inf(unvisited_nodes,tentative_distances):
+                if self.smallest_distance_is_inf(unvisited_nodes,tentative_distances):
                     break
 
                 # Step 6: continue
-                    current_node = get_closest_node(unvisited_nodes,tentative_distances)
+                current_node = self.get_closest_node(unvisited_nodes,tentative_distances)
         return shortest_paths
 
         def __str__(self):
@@ -93,4 +93,5 @@ def parse_input(input_file):
 
 #def path_with_most_release(start_point, time, unvisited_vertices, graph):
 #    return pressure_released
-parse_input("day16_test_input.txt")
+test_graph = parse_input("day16_test_input.txt")
+print(test_graph)
