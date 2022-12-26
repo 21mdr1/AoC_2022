@@ -41,7 +41,7 @@ class Graph:
     def get_shortest_walk(self):
         # we shall do dijkstra's
         shortest_paths = dict() #form: {(node1,node2):[node1,...,node2]}
-        for start_node in self.non_zero_valves:
+        for start_node in self.non_zero_valves + ['AA']:
             # Steps 1 & 2: Setup
             unvisited_nodes,tentative_distances = self.setup_for_dijkstras(start_node)
             current_node = start_node
@@ -97,8 +97,9 @@ def path_with_most_release(start_point, time, unvisited_valves, graph):
     most_release=0
     for valve in unvisited_valves:
         #calculate time
-        new_time = time - (graph.shortest_walks[(start_point,valve)] + 1)
-        new_unvisited_valves = unvisited_valves.copy().remove(valve)
+        new_time = time - len(graph.shortest_walks[(start_point,valve)])
+        new_unvisited_valves = unvisited_valves.copy()
+        new_unvisited_valves.remove(valve)
         release = path_with_most_release(valve,new_time,new_unvisited_valves,graph)
         if release > most_release: most_release = release
     return time * graph.vertex_weights[start_point] + most_release
@@ -107,6 +108,13 @@ def path_with_most_release(start_point, time, unvisited_valves, graph):
 ## Print Things ##
 print("Test run:")
 test_graph = parse_input("day16_test_input.txt")
-unvisited_valves = test_graph.non_zero_valves.copy().remove('AA')
+unvisited_valves = test_graph.non_zero_valves.copy()
 pressure_released = path_with_most_release('AA', 30, unvisited_valves, test_graph)
+print(f'The most pressure you can release is {pressure_released}')
+
+print("Real run:")
+graph = parse_input("day16_input.txt")
+unvisited_valves = graph.non_zero_valves.copy()
+if 'AA' in unvisited_valves: unvisited_valves.remove('AA')
+pressure_released = path_with_most_release('AA', 30, unvisited_valves, graph)
 print(f'The most pressure you can release is {pressure_released}')
