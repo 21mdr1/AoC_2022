@@ -35,7 +35,6 @@ class Graph:
         return True
 
     def get_closest_node(self,unvisited_nodes,tentative_distances):
-        #sorted(list(unvisited_squares),key=lambda x: tentative_distances[x])[0]
         return min(unvisited_nodes,key=lambda x: tentative_distances[x])
 
     def get_shortest_walk(self):
@@ -64,10 +63,6 @@ class Graph:
                 current_node = self.get_closest_node(unvisited_nodes,tentative_distances)
         return shortest_paths
 
-        def __str__(self):
-            # tbh this is just for debugging
-            return self.shortest_walks
-
 ## Parse Input into a graph ##
 
 def parse_input(input_file):
@@ -79,7 +74,6 @@ def parse_input(input_file):
         values = parse("Valve {valve} has flow rate={flow_rate:d}; tunnels lead to valves {list_of_valves}",line)
         if values == None: # if there's only 1 tunnel:
             values = parse("Valve {valve} has flow rate={flow_rate:d}; tunnel leads to valve {list_of_valves}",line)
-
         # save values:
         valves.add(values['valve'])
         flow_rates[values['valve']] = values['flow_rate']
@@ -98,19 +92,23 @@ def path_with_most_release(start_point, time, unvisited_valves, graph):
     for valve in unvisited_valves:
         #calculate time
         new_time = time - len(graph.shortest_walks[(start_point,valve)])
+        if new_time <= 0: continue
         new_unvisited_valves = unvisited_valves.copy()
         new_unvisited_valves.remove(valve)
         release = path_with_most_release(valve,new_time,new_unvisited_valves,graph)
-        if release > most_release: most_release = release
+        if release > most_release:
+            most_release = release
     return time * graph.vertex_weights[start_point] + most_release
 
 
 ## Print Things ##
+
 print("Test run:")
 test_graph = parse_input("day16_test_input.txt")
 unvisited_valves = test_graph.non_zero_valves.copy()
 pressure_released = path_with_most_release('AA', 30, unvisited_valves, test_graph)
 print(f'The most pressure you can release is {pressure_released}')
+
 
 print("Real run:")
 graph = parse_input("day16_input.txt")
