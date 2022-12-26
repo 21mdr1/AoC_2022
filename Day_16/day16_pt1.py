@@ -8,7 +8,7 @@ class Graph:
         self.edges = edges #list of sets
         self.vertex_weights = vertex_weights #dict
         self.non_zero_valves = [vertex for vertex in self.vertices if not self.vertex_weights[vertex] == 0]
-        self.shortest_walks = self.get_shortest_walk()
+        self.shortest_walks = self.get_shortest_walk() #form: {(node1,node2):[node1,...,node2]}
 
     def setup_for_dijkstras(self,start_node):
         # not 100% sure that we have to remove ourselves, but we'll see
@@ -40,7 +40,7 @@ class Graph:
 
     def get_shortest_walk(self):
         # we shall do dijkstra's
-        shortest_paths = dict() #form: {(node1,node2):([node1,...,node2],length)}
+        shortest_paths = dict() #form: {(node1,node2):[node1,...,node2]}
         for start_node in self.non_zero_valves:
             # Steps 1 & 2: Setup
             unvisited_nodes,tentative_distances = self.setup_for_dijkstras(start_node)
@@ -91,7 +91,22 @@ def parse_input(input_file):
 
 ## Do the Thing ##
 
-#def path_with_most_release(start_point, time, unvisited_vertices, graph):
-#    return pressure_released
+def path_with_most_release(start_point, time, unvisited_valves, graph):
+    if len(unvisited_valves) == 0:
+        return time * graph.vertex_weights[start_point]
+    most_release=0
+    for valve in unvisited_valves:
+        #calculate time
+        new_time = time - (graph.shortest_walks[(start_point,valve)] + 1)
+        new_unvisited_valves = unvisited_valves.copy().remove(valve)
+        release = path_with_most_release(valve,new_time,new_unvisited_valves,graph)
+        if release > most_release: most_release = release
+    return time * graph.vertex_weights[start_point] + most_release
+
+
+## Print Things ##
+print("Test run:")
 test_graph = parse_input("day16_test_input.txt")
-print(test_graph)
+unvisited_valves = test_graph.non_zero_valves.copy().remove('AA')
+pressure_released = path_with_most_release('AA', 30, unvisited_valves, test_graph)
+print(f'The most pressure you can release is {pressure_released}')
