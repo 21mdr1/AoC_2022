@@ -14,12 +14,15 @@
 
 class Rock:
     def __init__(self,rock_type,x,y):
+        # x,y are the bottom left corner, not necessarily a point on the rock
         self.x = x
         self.y = y
         self.type = rock_type # 1, 2, 3, 4, or 5
         self.blocks = self.get_blocks() #list
 
     def get_blocks(self):
+        #### FIX
+        # x,y are the bottom left corner, not necessarily a point on the rock
         # returns list
         blocks = [(self.x,self.y)]
         if self.type == 1: # line shape
@@ -69,6 +72,25 @@ class Rock:
         def fall(self):
             self.y+=1
             self.blocks = self.get_blocks()
+
+class Cave:
+    def __init__(self):
+        self.width = 7
+        self.floor = 0 # floor is at y=0
+        self.rock_height = 0 # total height of stacked rocks
+        self.rocks = []
+        self.rock_counter = 1 #goes 1,2,3,4,5 - determines which rock falls
+
+    def drop_rock(self):
+        rock_type = self.rock_counter%5
+        if rock_type == 0: rock_type = 5  # 0 => rock type 5
+        x = 3 #(most of the time??)
+        y = self.rock_height + 3
+
+        rock = Rock(rock_type,x,self.rock_height+3)
+
+
+# its left edge is two units away from the left wall
 
 def move(x,dir):
     if dir == '>': x += 1
